@@ -88,7 +88,6 @@ router.get('/users', verifyToken, async (req, res) => {
     const query = req.query.query != undefined ? req.query.query : '';
     const sortBy = req.query.sort != undefined ? req.query.sort : 'createdAt';
     const order = req.query.order != undefined ? req.query.order : -1;
-    console.log(req.user);
     
     const re = new RegExp(query, "gi");
 

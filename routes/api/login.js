@@ -4,6 +4,11 @@ const jwt = require("jsonwebtoken");
 const router = express.Router();
 
 const User = require('../../models/user');
+const verifyToken = require('../../config/auth').verifyToken;
+
+router.get('/', verifyToken, async (req, res) => {
+    res.json(req.user);
+});
 
 router.post('/', async (req, res, next) => {
     try {
@@ -42,7 +47,8 @@ router.post('/', async (req, res, next) => {
                     {
                         id: user._id,
                         role: user.role,
-                        lastLogin: Date.now
+                        lastLogin: Date.now,
+                        exp: Math.floor(Date.now() / 1000) + (60 * 60 * 24)
                     }, process.env.JWT_KEY,
                     (err, token) => {
                         if (err) {

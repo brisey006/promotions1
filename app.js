@@ -36,6 +36,10 @@ mongoose.connect(`mongodb://${process.env.DB_PATH || 'localhost'}:27017/promotio
 });
 
 app.use(express.static(path.join(__dirname, 'public')));
+app.use((req, res, next) => {
+    app.locals.publicDir = path.join(__dirname, 'public');
+    next();
+});
 
 app.use('/', require('./routes/index'));
 app.use('/setup', require('./setup/init'));

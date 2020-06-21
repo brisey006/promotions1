@@ -8,6 +8,8 @@ const roles = {
 }
 
 function verifyToken(req, res, next) {
+  const error = new Error(JSON.stringify(['Invalid token. Login Again!']));
+
   const bearerHeader = req.headers['authorization'];
   if(typeof bearerHeader !== 'undefined') {
     let bearerToken;
@@ -18,21 +20,22 @@ function verifyToken(req, res, next) {
       bearerToken = bearerHeader;
     }
     
-    jwt.verify(bearerToken, 'process.env.JWT_KEY', async (err, authData) => {
+    jwt.verify(bearerToken, process.env.JWT_KEY, async (err, authData) => {
       try {
         if(err) {
-          res.sendStatus(403);
+          const error = new Error(JSON.stringify([err.message]));
+          error.status = 403;
+          next(error);
         } else {
           const user = await User.findOne({ _id: authData.id });
 
           if (user != null) {
             req.user = {
               token: bearerToken,
-              ...authData
+              ...user._doc
             };
             next();
           } else {
-            const error = new Error('Invalid token');
             error.status = 403;
             next(error);
           }
@@ -42,7 +45,8 @@ function verifyToken(req, res, next) {
       }
     });
   } else {
-    res.sendStatus(403);
+    error.status = 403;
+    next(error);
   }
 
 }

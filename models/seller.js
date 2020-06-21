@@ -23,7 +23,11 @@ const SellerSchema = new mongoose.Schema({
         unique: true,
         required: true
     },
-    logoUrl: String,
+    image: {
+        original: String,
+        thumbnail: String,
+        cropped: String
+    },
     promotions: {
         type: Number,
         default: 0
