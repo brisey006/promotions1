@@ -101,9 +101,15 @@ router.post('/', verifyToken, isSuperAdmin, async (req, res, next) => {
                         res.json(user);
                     })
                     .catch(e => {
-                        console.log(e.response.body.errors);
-                        const error = new Error(e.response.body.errors);
-                        next(error);
+                        console.log(e);
+                        User.deleteOne({ _id: user._id })
+                        .then(() => {
+                            const error = new Error(JSON.stringify(['An error occured, try again']));
+                            next(error);
+                        }).catch(e => {
+                            const error = new Error(JSON.stringify(['An error occured, try again']));
+                            next(error);
+                        }); 
                     });
                 }).catch(err => {
                     console.log(err);

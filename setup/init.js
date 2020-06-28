@@ -6,7 +6,7 @@ const enc = require('../config/enc');
 
 const User = require('../models/user');
 
-router.get('/user', (req, res) => {
+router.post('/user', (req, res) => {
     const user = new User({
         firstName: 'Super',
         lastName: 'User',
