@@ -1,0 +1,29 @@
+version: '3'
+services: 
+  app:
+    container_name: promotions
+    restart: always
+    build: .
+    links: 
+      - promotions_mongo
+    volumes: 
+      - store:/usr/src/app/public/uploads
+      - node_modules:/usr/src/app/node_modules
+    networks:
+      - net
+  promotions_mongo:
+    container_name: promotions_mongo
+    image: mongo
+    volumes: 
+      - db:/data/db
+    networks: 
+      - net
+    ports:
+      - '27017'
+networks: 
+  net:
+    driver: bridge
+volumes: 
+  db:
+  store:
+  node_modules:
