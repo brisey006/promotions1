@@ -11,11 +11,15 @@ const PromotionSchema = new mongoose.Schema({
     slug: {
         type: String,
         index: true,
-        required: true
+        required: true,
+        unique: true
     },
     image: {
         original: String,
-        thumb: String,
+        thumbnail: {
+            type: String,
+            default: '/assets/images/promotions/placeholder.png'
+        },
         cropped: String
     },
     originalPrice: Number,

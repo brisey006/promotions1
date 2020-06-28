@@ -7,10 +7,12 @@ const ImageUploadSetting = require('../../models/image-upload-setting');
 
 const verifyToken = require('../../config/auth').verifyToken;
 const slugify = require('../../functions/index').slugify;
+const isSuperAdmin = require('../../config/auth').isSuperAdmin;
+
 const imageKeys = require('../../data/image-settings');
 
-router.post('/', verifyToken, async (req, res, next) => {
-    let { name, aspectRatio, maxSize, crop } = req.body;
+router.post('/', verifyToken, isSuperAdmin, async (req, res, next) => {
+    let { name, aspectRatio, maxSize, crop, thumbnailWidth, croppedWidth } = req.body;
     try {
         const errors = [];
 
@@ -28,6 +30,14 @@ router.post('/', verifyToken, async (req, res, next) => {
         
         if (crop.length != undefined) {
             errors.push("Select if image is to be cropped.");
+        }
+
+        if (!thumbnailWidth) {
+            errors.push("Thumbnail width is required.");
+        }
+
+        if (!croppedWidth) {
+            errors.push("Cropped width is required.");
         }
 
         if (errors.length == 0) {
@@ -67,7 +77,11 @@ router.post('/', verifyToken, async (req, res, next) => {
             thumbnailsPath = thumbnailsPath.substring(publicDir.length, thumbnailsPath.length).replace(/\\/g, '/');
 
             aspectRatio = aspectRatio.split(':');
-            const imageUploadSetting = new ImageUploadSetting({ name, slug, crop, croppedPath, originalPath, thumbnailsPath, aspectRatio, maxSize, createdBy });
+            const imageUploadSetting = new ImageUploadSetting({ 
+                name, slug, crop, croppedPath, originalPath,
+                thumbnailsPath, aspectRatio, maxSize, createdBy,
+                thumbnailWidth, croppedWidth
+            });
             await imageUploadSetting.save();
 
             res.json(imageUploadSetting);
@@ -123,7 +137,27 @@ router.get('/keys/all', verifyToken, (req, res, next) => {
     res.json(imageKeys);
 });
 
-router.delete('/:id', verifyToken, async (req, res) => {
+router.put('/:id', verifyToken, isSuperAdmin, async (req, res) => {
+    try {
+        const id = req.params.id;
+        const aspectRatio = req.body.aspectRatio.split(':');
+        const result = await ImageUploadSetting.updateOne({ _id: id }, { $set: { ...req.body, aspectRatio } });
+        if (result.nModified == 1) {
+            const updated = await ImageUploadSetting.findOne({ _id: id });
+            res.json(updated);
+        } else {
+            const errors = ['Image setting failed to update. Please try again later!'];
+            const error = new Error(JSON.stringify(errors));
+            error.status = 406;
+            next(error);
+        }
+    } catch (e) {
+        const error = new Error(JSON.stringify([e.message]));
+        next(error);
+    }
+});
+
+router.delete('/:id', verifyToken, isSuperAdmin, async (req, res) => {
     try {
         const data = await ImageUploadSetting.findOne({  _id: req.params.id });
         let result = await ImageUploadSetting.deleteOne({ _id: req.params.id });

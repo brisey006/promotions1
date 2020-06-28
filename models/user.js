@@ -41,6 +41,7 @@ const UserSchema = new mongoose.Schema({
             type: String,
             default: '/assets/images/users/avatar_placeholder.jpg'
         },
+        cropped: String
     },
     tempPhotoUrl: String,
     gender: String,

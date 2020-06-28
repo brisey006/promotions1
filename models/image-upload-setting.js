@@ -19,6 +19,8 @@ const ImageUploadSettingSchema = new mongoose.Schema({
     thumbnailsPath: String,
     aspectRatio: [Number],
     maxSize: Number,
+    thumbnailWidth: Number,
+    croppedWidth: Number,
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
 }, {
     timestamps: true

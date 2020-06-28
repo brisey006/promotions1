@@ -8,12 +8,12 @@ const User = require('../models/user');
 
 router.get('/user', (req, res) => {
     const user = new User({
-        firstName: 'Admin',
-        lastName: 'Super',
-        email: 'super@admin.com',
-        fullName: 'Super Admin',
-        password: 'admin1',
-        userType: 'super-admin'
+        firstName: 'Super',
+        lastName: 'User',
+        email: process.env.SUPER_USER_EMAIL,
+        fullName: 'Super User',
+        password: process.env.SUPER_ADMIN_PASSWORD,
+        userType: 'super-user'
     });
 
     bcrypt.genSalt(10, (err, salt) => bcrypt.hash(user.password, salt, (err, hash) => {

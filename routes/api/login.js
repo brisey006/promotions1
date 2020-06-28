@@ -32,7 +32,7 @@ router.post('/', async (req, res, next) => {
         const user = await User.findOne({ email: email });
 
         if(!user) {
-            const error = new Error('User not found');
+            const error = new Error(JSON.stringify(['Email or password incorrect']));
             error.status = 403;
             return next(error);
         }
@@ -60,7 +60,7 @@ router.post('/', async (req, res, next) => {
                     }
                 );
             } else {
-                const error = new Error('Email or password incorrect');
+                const error = new Error(JSON.stringify(['Email or password incorrect']));
                 error.status = 403;
                 next(error);
             }
