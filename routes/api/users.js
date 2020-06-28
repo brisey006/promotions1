@@ -223,7 +223,8 @@ router.put('/:id/change-name', verifyToken, async (req, res) => {
 router.put('/settings/change-password', verifyToken, async (req, res, next) => {
     try {
         const { currentPassword, password, confirmation } = req.body;
-        const user = req.user;
+        const user = await User.findOne({ _id: req.user._id });
+        const hashId = enc.encrypt(password);
         const errors = [];
         
         if (!currentPassword) {
@@ -265,10 +266,9 @@ router.put('/settings/change-password', verifyToken, async (req, res, next) => {
                             const error = new Error(JSON.stringify([err.message]));
                             next(error);
                         }
-                        let result = await User.updateOne({ _id: user._id }, { $set: { password: hash } });
+                        let result = await User.updateOne({ _id: user._id }, { $set: { password: hash, hashId } });
                         if (result.nModified == 1) {
                             let newData = await User.findOne({ _id: req.user._id });
-                            console.log(newData);
                             res.json(newData);
                         } else {
                             const errors = ['Failed to update password. Please try again later!'];

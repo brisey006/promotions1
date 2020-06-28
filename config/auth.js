@@ -26,7 +26,7 @@ function verifyToken(req, res, next) {
         error.status = 403;
         next(error);
       } else {
-        const user = await User.findOne({ _id: authData.id });
+        const user = await User.findOne({ _id: authData.id }).select('-password');
 
         if (user != null) {
           req.user = {
