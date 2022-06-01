@@ -36,7 +36,7 @@
     "passport-local": "^1.0.0",
     "path-to-regexp": "^6.1.0",
     "random-string": "^0.2.0",
-    "sharp": "^0.25.2",
+    "sharp": "^0.30.5",
     "socket.io": "^2.3.0"
   }
 }
